@@ -1,0 +1,32 @@
+name: Run Scripts 
+
+on:
+  pull_request:
+    branches:
+      - Master  
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Scripts 
+        id: cypress
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome 
+
+      - name: Generate Test Summary
+        if: always()
+        run: echo "## Test run report" >> $GITHUB_STEP_SUMMARY
