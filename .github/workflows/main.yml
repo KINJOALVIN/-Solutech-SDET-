@@ -1,0 +1,48 @@
+name: CI/CD Test runs
+
+on:
+  push:
+    branches:
+      - Master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm ci  
+
+      - name: Start Server (if needed)
+        run: npm start 
+
+      - name: CI/CD Test runs
+        uses: cypress-io/github-action@v6
+        with:
+          browser: chrome  
+          headless: true   
+
+      - name: Upload test Screenshots on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-screenshots
+          path: test/screenshots
+
+      - name: Upload Test Videos on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-videos
+          path: test/videos
